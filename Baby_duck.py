@@ -125,7 +125,7 @@ def set_motor_speeds(speed_a, speed_b):
     pwm_b.ChangeDutyCycle(spd_b)
 
 # NEW: params for alignment
-ALIGN_THRESHOLD = 5.0    # cm difference to start turning
+ALIGN_THRESHOLD = 2.0    # cm difference to start turning
 ALIGN_BOOST     = 20.0   # extra speed for the farther side
 
 try:
