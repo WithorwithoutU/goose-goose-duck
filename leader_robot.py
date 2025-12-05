@@ -64,7 +64,7 @@ pright = GPIO.PWM(RIGHT_MOTOR_PWM, frequency)
 # WiFi Setup
 UDP_IP = ""
 UDP_PORT = 5005
-FOLLOWER_IP = "10.49.242.23"
+FOLLOWER_IP = "10.49.245.165"
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
