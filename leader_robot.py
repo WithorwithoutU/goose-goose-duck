@@ -106,7 +106,7 @@ def forward(dc):
 	GPIO.output(LEFT_MOTOR_IN2, GPIO.HIGH)
 	GPIO.output(RIGHT_MOTOR_IN1, GPIO.LOW)
 	GPIO.output(RIGHT_MOTOR_IN2, GPIO.HIGH)
-	pleft.ChangeDutyCycle(dc)
+	pleft.ChangeDutyCycle(dc * 1.2)
 	pright.ChangeDutyCycle(dc)
 	time.sleep(pulse_width)
 
@@ -203,7 +203,7 @@ def move_sequence_thread():
 				time.sleep(5)
 			else:
 				turn_right(25)
-				time.sleep(3)
+				time.sleep(2)
 			
 			i += 1
 
