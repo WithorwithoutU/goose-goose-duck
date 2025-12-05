@@ -188,7 +188,7 @@ def move_sequence_thread():
 	global robot_running
 	
 	i = 0
-	while move_sequence_running:
+	while move_sequence_running and robot_running:
 		if not robot_running:
 			# robot quit
 			move_sequence_running = False
@@ -200,12 +200,15 @@ def move_sequence_thread():
 		else:
 			if i % 2 == 0:
 				forward(25)
+				time.sleep(5)
 			else:
 				turn_right(25)
+				time.sleep(3)
 			
 			i += 1
 
 def seek_thread():
+	global robot_running
 	global seek_running
 	while seek_running:
 		frame = camera.capture_array()
@@ -239,6 +242,8 @@ def seek_thread():
 					seek_running = False
 					send_command("FOUND")
 					dance()
+					# quit
+					robot_running = False
 					break
 				else:
 					# Seek
