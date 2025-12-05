@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from picamera2 import Picamera2
 import socket
+import threading
 
 # Pins
 GPIO.setmode(GPIO.BCM)
@@ -79,30 +80,17 @@ def physical_quit_callback(channel):
 
 def seek_callback(channel):
 	global seek_running
-	seek_running = True
+	if not seek_running:
+		seek_running = True
+		seek_t = threading.Thread(target=seek_thread, daemon=True)
+		seek_t.start()
 
 def move_sequence(channel):
-	global seek_running
 	global move_sequence_running
-	global robot_running
-	
-	move_sequence_running = True
-	i = 0
-	while move_sequence_running:
-		if not robot_running:
-			# robot quit
-			move_sequence_running = False
-		elif seek_running:
-			# mom starts seeking
-			move_sequence_running = False
-		else:
-			if i % 2 == 0:
-				forward(25)
-			else:
-				turn_right(25)
-			
-			i += 1
-	
+	if not move_sequence_running:
+		move_sequence_running = True
+		move_t = threading.Thread(target=move_sequence_thread, daemon=True)
+		move_t.start()
 
 GPIO.add_event_detect(QUIT_BUTTON_PIN, GPIO.FALLING, callback=physical_quit_callback, bouncetime=200)
 GPIO.add_event_detect(START_SEEK_BUTTON_PIN, GPIO.FALLING, callback=seek_callback, bouncetime=200)
@@ -181,8 +169,31 @@ def move(object_location):
 		# In the middle
 		forward(25)
 
-# Seek
-def seek():
+# Thread
+def move_sequence_thread():
+	global seek_running
+	global move_sequence_running
+	global robot_running
+	
+	i = 0
+	while move_sequence_running:
+		if not robot_running:
+			# robot quit
+			move_sequence_running = False
+			break
+		elif seek_running:
+			# mom starts seeking
+			move_sequence_running = False
+			break
+		else:
+			if i % 2 == 0:
+				forward(25)
+			else:
+				turn_right(25)
+			
+			i += 1
+
+def seek_thread():
 	global seek_running
 	while seek_running:
 		frame = camera.capture_array()
@@ -214,6 +225,7 @@ def seek():
 					print("FOUND")
 					stop()
 					seek_running = False
+					sock.sendto("FOUND".encode(), (UDP_IP, UDP_PORT))
 					break
 				else:
 					# Seek
@@ -224,8 +236,7 @@ def seek():
 			# Not Found, turn?
 			turn_left(25)
 			
-		if cv2.waitKey(1):
-			robot_running = False
+		cv2.waitKey(1)
 
 # Start Camera
 camera = Picamera2()
@@ -242,16 +253,18 @@ while robot_running:
 		data, addr = sock.recvfrom(1024)
 		print("Received", data)
 	
-		if data == "LOST":
-			seek_running = True
+		if data.decode() == "LOST":
+			if not seek_running:
+				seek_running = True
+				seek_t = threading.Thread(target=seek_thread, daemon=True)
+				seek_t.start()
 	except socket.timeout:
 		continue
 	
-	# seek
-	if seek_running:
-		seek()
 	time.sleep(1)
 
+pleft.stop()
+pright.stop()
 camera.stop()
 cv2.destroyAllWindows()
 sock.close()
