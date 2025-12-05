@@ -212,7 +212,7 @@ def seek_thread():
 	global seek_running
 	while seek_running:
 		frame = camera.capture_array()
-		cv2.imshow("Frame", frame)
+		# cv2.imshow("Frame", frame)
 	
 		hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 		#print("HSV", hsv[240, 320])
@@ -232,7 +232,7 @@ def seek_thread():
 			
 				# for debugging
 				cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-				cv2.imshow("Frame", frame)
+				# cv2.imshow("Frame", frame)
 			
 				# detecting baby duck
 				if area > STOP:
