@@ -47,8 +47,8 @@ DETECT = 500
 # Boundaries
 HEIGHT = 480
 WIDTH = 640
-CENTER_LEFT = 213
-CENTER_RIGHT = 426
+CENTER_LEFT = 100
+CENTER_RIGHT = 540
 
 # Global Flags
 robot_running = True
