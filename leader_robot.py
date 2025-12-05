@@ -11,6 +11,7 @@ GPIO.setmode(GPIO.BCM)
 QUIT_BUTTON_PIN = 27
 START_SEEK_BUTTON_PIN = 17
 MOVE_SEQUENCE_BUTTON_PIN = 22
+TEMP_QUIT_PIN =  23
 LEFT_MOTOR_PWM = 20
 LEFT_MOTOR_IN1 = 5
 LEFT_MOTOR_IN2 = 6
@@ -30,6 +31,7 @@ GPIO.setup(RIGHT_MOTOR_IN2, GPIO.OUT)
 GPIO.setup(QUIT_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(START_SEEK_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(MOVE_SEQUENCE_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(TEMP_QUIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Color Range
 # Currently, red?
@@ -38,7 +40,7 @@ UPPER = np.array([120, 255, 255])
 # 100, 200, 255
 
 # Area
-STOP = 20000
+STOP = 10000
 DETECT = 500
 
 # Boundaries
@@ -79,6 +81,17 @@ def physical_quit_callback(channel):
 	robot_running = False
 	move_sequence_running = False
 
+def temp_quit_callback(channel):
+	global seek_running
+	global move_sequence_running
+	print("TEMP QUIT")
+	if seek_running:
+		stop()
+		seek_running = False
+	if move_sequence_running:
+		stop()
+		move_sequence_running = False
+
 def seek_callback(channel):
 	global seek_running
 	if not seek_running:
@@ -96,6 +109,7 @@ def move_sequence(channel):
 GPIO.add_event_detect(QUIT_BUTTON_PIN, GPIO.FALLING, callback=physical_quit_callback, bouncetime=200)
 GPIO.add_event_detect(START_SEEK_BUTTON_PIN, GPIO.FALLING, callback=seek_callback, bouncetime=200)
 GPIO.add_event_detect(MOVE_SEQUENCE_BUTTON_PIN, GPIO.FALLING, callback=move_sequence, bouncetime=200)
+GPIO.add_event_detect(TEMP_QUIT_PIN, GPIO.FALLING, callback=move_sequence, bouncetime=200)
 
 # Motor Functions
 def forward(dc):
@@ -233,6 +247,8 @@ def seek_thread():
 				# for debugging
 				cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 				# cv2.imshow("Frame", frame)
+
+				print("AREA: ", area)
 			
 				# detecting baby duck
 				if area > STOP:
