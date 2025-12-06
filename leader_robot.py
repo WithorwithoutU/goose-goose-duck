@@ -40,8 +40,8 @@ UPPER = np.array([120, 255, 255])
 # 100, 200, 255
 
 # Area
-STOP = 150000
-# want around 164,649
+STOP = 10000
+# want around 164,649?
 DETECT = 500
 
 # Boundaries
