@@ -40,7 +40,8 @@ UPPER = np.array([120, 255, 255])
 # 100, 200, 255
 
 # Area
-STOP = 10000
+STOP = 600
+# STOP = 10000
 # want around 164,649?
 DETECT = 500
 
@@ -250,9 +251,11 @@ def seek_thread():
 				# cv2.imshow("Frame", frame)
 
 				print("AREA: ", area)
+				print("Height: ", h)
 			
 				# detecting baby duck
-				if area > STOP:
+				# if AREA > STOP:
+				if h > STOP:
 					# Arrived
 					print("FOUND")
 					stop()
