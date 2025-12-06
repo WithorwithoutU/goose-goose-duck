@@ -40,7 +40,7 @@ UPPER = np.array([120, 255, 255])
 # 100, 200, 255
 
 # Area
-STOP = 600
+STOP = 470
 # STOP = 10000
 # want around 164,649?
 DETECT = 500
@@ -284,7 +284,7 @@ def send_command(message):
 def receive_command():
 	try:
 		data, addr = sock.recvfrom(1024)
-		print("Received: ", data)
+		print("Received: ", data.decode())
 		return data.decode()
 	except socket.timeout:
 		return None
