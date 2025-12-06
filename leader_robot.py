@@ -40,7 +40,7 @@ UPPER = np.array([120, 255, 255])
 # 100, 200, 255
 
 # Area
-STOP = 470
+STOP = 300
 # STOP = 10000
 # want around 164,649?
 DETECT = 500
@@ -87,12 +87,10 @@ def temp_quit_callback(channel):
 	global seek_running
 	global move_sequence_running
 	print("TEMP QUIT")
-	if seek_running:
+	if seek_running or move_sequence_running:
 		stop()
-		seek_running = False
-	if move_sequence_running:
-		stop()
-		move_sequence_running = False
+	seek_running = False
+	move_sequence_running = False
 
 def seek_callback(channel):
 	global seek_running
@@ -205,7 +203,6 @@ def move_sequence_thread():
 	
 	i = 0
 	while move_sequence_running and robot_running:
-		receive_command()
 		if not robot_running:
 			# robot quit
 			move_sequence_running = False
@@ -251,7 +248,7 @@ def seek_thread():
 				cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 				# cv2.imshow("Frame", frame)
 
-				print("AREA: ", area)
+				# print("AREA: ", area)
 				print("Height: ", h)
 			
 				# detecting baby duck
