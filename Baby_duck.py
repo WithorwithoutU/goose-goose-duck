@@ -118,30 +118,9 @@ def set_motor_speeds(speed_a, speed_b):
     pwm_a.ChangeDutyCycle(spd_a)
     pwm_b.ChangeDutyCycle(spd_b)
 
-
-ALIGN_THRESHOLD = 2.0
-ALIGN_BOOST = 25
-
-
-def fmt_dist(d):
-    if d is None:
-        return "None"
-    return f"{d:.1f}"
-
-
-def send_command(message):
-    sock.sendto(message.encode(), (LEADER_IP, UDP_PORT))
-    print("Send: ", message)
-
-
-def receive_command():
-    try:
-        data, addr = sock.recvfrom(1024)
-        print("Received: ", data)
-        return data.decode()
-    except socket.timeout:
-        return None
-
+# NEW: params for alignment
+ALIGN_THRESHOLD = 2.0    # cm difference to start turning
+ALIGN_BOOST     = 20.0   # extra speed for the farther side
 
 try:
     while stop_flag:
